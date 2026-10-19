@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   ShoppingBag, 
-  Sparkles, 
-  User, 
   Palette, 
-  PlusCircle, 
+  User, 
+  Layers, 
   LogOut, 
   ChevronDown, 
-  Layers, 
-  MessageSquareText,
+  Sparkles,
   ShieldCheck,
-  Flame
+  PlusCircle,
+  Shirt
 } from 'lucide-react';
 
 export default function Navbar({ onNavigateSection }) {
@@ -19,270 +18,218 @@ export default function Navbar({ onNavigateSection }) {
     user, 
     cartCount, 
     setIsCartOpen, 
-    setIsAuthModalOpen, 
-    setAuthDefaultRole,
-    loginAs,
-    logout,
-    setIsSellerDashboardOpen,
-    customRequests
+    loginAs, 
+    logout, 
+    navigateTo,
+    activeView
   } = useApp();
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0b0d13]/90 backdrop-blur-md border-b border-slate-800/80">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200">
+      
       {/* Top Banner Ticker */}
-      <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 text-black text-xs font-semibold py-1.5 px-4 text-center tracking-wide flex items-center justify-center gap-4 overflow-hidden">
+      <div className="bg-slate-950 text-white text-[11px] font-semibold py-1.5 px-4 text-center tracking-wide flex items-center justify-center gap-3 overflow-hidden">
         <span className="flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5" />
-          Marketplace VIP de Estampados de Autor & Diseños Exclusivos
+          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+          Prendas Estampadas de Autor & Colecciones Exclusivas
         </span>
-        <span className="hidden md:inline">•</span>
-        <span className="hidden md:inline flex items-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          Algodón 240g/m² & Estampado DTG de Máxima Durabilidad
+        <span className="hidden md:inline text-slate-600">•</span>
+        <span className="hidden md:inline flex items-center gap-1 text-slate-300">
+          <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+          Algodón Pesado 240g/m² & Serigrafía de Alta Definición
         </span>
-        <span className="hidden lg:inline">•</span>
-        <span className="hidden lg:inline font-bold">
-          ⚡ Conecta directo con artistas y solicita prendas personalizadas
+        <span className="hidden lg:inline text-slate-600">•</span>
+        <span className="hidden lg:inline text-blue-400 font-bold">
+          Envíos a todo el país & Encargos directos a ilustradores
         </span>
       </div>
 
-      {/* Main Navbar */}
+      {/* Main Navbar Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+        
         {/* Brand / Logo */}
         <div 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => navigateTo('store')}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-            <Flame className="w-6 h-6 text-black" />
+          <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm group-hover:bg-blue-700 transition">
+            <Shirt className="w-6 h-6" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="text-xl font-extrabold tracking-tight text-white font-['Space_Grotesk']">
-                VIP<span className="text-amber-400">WEAR</span>
+              <span className="text-xl font-black tracking-tight text-slate-900 font-['Space_Grotesk']">
+                TIENDA<span className="text-blue-600">VIP</span>
               </span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-300 border border-amber-400/30">
-                PRO
+              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                DROPS
               </span>
             </div>
-            <span className="text-[11px] text-slate-400 tracking-wide font-medium">
-              Custom Prints & Creator Drops
+            <span className="text-[11px] text-slate-500 tracking-wide font-medium">
+              Ropa Estampada & Arte Textil
             </span>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
           <button 
-            onClick={() => onNavigateSection('catalog')} 
-            className="hover:text-amber-400 transition-colors flex items-center gap-1.5"
+            onClick={() => {
+              if (activeView !== 'store') navigateTo('store');
+              setTimeout(() => onNavigateSection('catalog'), 50);
+            }} 
+            className="hover:text-blue-600 transition flex items-center gap-1.5"
           >
             <Layers className="w-4 h-4 text-slate-400" />
-            Catálogo de Estampados
+            <span>Catálogo</span>
           </button>
 
           <button 
-            onClick={() => onNavigateSection('creators')} 
-            className="hover:text-amber-400 transition-colors flex items-center gap-1.5"
+            onClick={() => {
+              if (activeView !== 'store') navigateTo('store');
+              setTimeout(() => onNavigateSection('creators'), 50);
+            }} 
+            className="hover:text-blue-600 transition flex items-center gap-1.5"
           >
             <Palette className="w-4 h-4 text-slate-400" />
-            Diseñadores VIP
+            <span>Diseñadores</span>
           </button>
 
           <button 
-            onClick={() => onNavigateSection('custom-info')} 
-            className="hover:text-amber-400 transition-colors flex items-center gap-1.5"
+            onClick={() => {
+              if (activeView !== 'store') navigateTo('store');
+              setTimeout(() => onNavigateSection('custom-info'), 50);
+            }} 
+            className="hover:text-blue-600 transition flex items-center gap-1.5"
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            Pedidos Personalizados
+            <Sparkles className="w-4 h-4 text-blue-600" />
+            <span>Pedidos a Medida</span>
           </button>
         </nav>
 
-        {/* Right Controls */}
+        {/* Action Controls: User Profile & Cart */}
         <div className="flex items-center gap-3">
-          {/* Quick Demo Switcher (Perfect for client presentation) */}
-          <div className="hidden xl:flex items-center gap-1.5 bg-slate-900 border border-slate-700/60 p-1 rounded-xl text-xs">
-            <span className="text-slate-400 px-2 font-medium">Demo:</span>
-            <button
-              onClick={() => loginAs('buyer')}
-              className={`px-2.5 py-1 rounded-lg transition font-medium ${
-                user?.role === 'buyer'
-                  ? 'bg-amber-400 text-black shadow-sm'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              🛍️ Comprador
-            </button>
-            <button
-              onClick={() => loginAs('seller')}
-              className={`px-2.5 py-1 rounded-lg transition font-medium ${
-                user?.role === 'seller'
-                  ? 'bg-amber-400 text-black shadow-sm'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              🎨 Vendedor
-            </button>
-          </div>
+          
+          {/* User Profile Access */}
+          {user ? (
+            <div className="relative">
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 p-1.5 pr-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 transition text-left"
+              >
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-8 h-8 rounded-lg object-cover border border-blue-500 shrink-0"
+                />
+                <div className="hidden sm:flex flex-col min-w-0">
+                  <span className="text-xs font-bold text-slate-900 truncate max-w-[130px]">
+                    {user.name}
+                  </span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                    user.role === 'seller' ? 'text-blue-600' : 'text-slate-700'
+                  }`}>
+                    {user.role === 'seller' ? 'Diseñador' : 'Comprador'}
+                  </span>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 hidden sm:inline" />
+              </button>
 
-          {/* Cart Button */}
+              {/* User Dropdown Menu */}
+              {isUserMenuOpen && (
+                <div 
+                  onMouseLeave={() => setIsUserMenuOpen(false)}
+                  className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 text-xs space-y-1 animate-fade-in"
+                >
+                  <div className="p-3 border-b border-slate-100 bg-slate-50 rounded-xl mb-1">
+                    <p className="font-bold text-slate-900 truncate">{user.name}</p>
+                    <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                    <span className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                      user.role === 'seller' 
+                        ? 'bg-blue-100 text-blue-800' 
+                        : 'bg-slate-200 text-slate-800'
+                    }`}>
+                      {user.role === 'seller' ? 'Perfil Diseñador VIP' : 'Perfil Comprador VIP'}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      navigateTo('profile');
+                      setIsUserMenuOpen(false);
+                    }}
+                    className="w-full text-left py-2 px-3 rounded-lg hover:bg-blue-50 hover:text-blue-700 font-bold flex items-center gap-2 transition"
+                  >
+                    <User className="w-4 h-4 text-blue-600" />
+                    <span>Ver Mi Perfil ({user.role === 'seller' ? 'Diseñador' : 'Comprador'})</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      navigateTo('store');
+                      setIsUserMenuOpen(false);
+                    }}
+                    className="w-full text-left py-2 px-3 rounded-lg hover:bg-slate-100 font-semibold flex items-center gap-2 transition text-slate-700"
+                  >
+                    <Shirt className="w-4 h-4 text-slate-500" />
+                    <span>Ir a la Tienda de Ropa</span>
+                  </button>
+
+                  <div className="border-t border-slate-100 my-1 pt-1">
+                    <button
+                      onClick={() => {
+                        loginAs(user.role === 'seller' ? 'buyer' : 'seller');
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full text-left py-2 px-3 rounded-lg hover:bg-slate-100 font-semibold flex items-center gap-2 transition text-slate-700"
+                    >
+                      <Palette className="w-4 h-4 text-blue-600" />
+                      <span>Cambiar a {user.role === 'seller' ? 'Comprador' : 'Diseñador'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full text-left py-2 px-3 rounded-lg hover:bg-red-50 text-red-600 font-semibold flex items-center gap-2 transition"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Cerrar Sesión</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => navigateTo('login')}
+              className="py-2.5 px-4 rounded-xl bg-black hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-2 transition shadow-sm"
+            >
+              <User className="w-4 h-4" />
+              <span>Iniciar Sesión</span>
+            </button>
+          )}
+
+          {/* Cart Drawer Trigger */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="relative p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white hover:border-slate-700 transition group flex items-center justify-center"
+            className="relative p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition flex items-center justify-center shadow-sm"
             title="Ver carrito de compras"
           >
-            <ShoppingBag className="w-5 h-5 text-slate-300 group-hover:text-amber-400 transition-colors" />
+            <ShoppingBag className="w-5 h-5" />
             {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-amber-500 to-amber-600 text-black text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-pulse">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-black text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-white">
                 {cartCount}
               </span>
             )}
           </button>
 
-          {/* User Auth / Profile */}
-          {user ? (
-            <div className="relative">
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 text-left transition"
-              >
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-8 h-8 rounded-lg object-cover ring-2 ring-amber-400/40"
-                />
-                <div className="hidden sm:block">
-                  <div className="text-xs font-semibold text-white leading-tight flex items-center gap-1.5">
-                    {user.name.split(' ')[0]}
-                    <span
-                      className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
-                        user.role === 'seller'
-                          ? 'bg-purple-900/60 text-purple-300 border border-purple-500/30'
-                          : 'bg-emerald-900/60 text-emerald-300 border border-emerald-500/30'
-                      }`}
-                    >
-                      {user.role === 'seller' ? 'Vendedor' : 'Comprador'}
-                    </span>
-                  </div>
-                  <div className="text-[10px] text-slate-400 truncate max-w-[120px]">
-                    {user.email}
-                  </div>
-                </div>
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              </button>
-
-              {/* User Dropdown */}
-              {isUserMenuOpen && (
-                <div 
-                  className="absolute right-0 mt-2 w-64 rounded-2xl bg-slate-900/95 border border-slate-800 shadow-2xl p-2 z-50 backdrop-blur-xl"
-                  onClick={() => setIsUserMenuOpen(false)}
-                >
-                  <div className="p-3 border-b border-slate-800 mb-1">
-                    <p className="text-xs font-semibold text-white">{user.name}</p>
-                    <p className="text-xs text-slate-400">{user.email}</p>
-                    <div className="mt-2 text-[11px] text-amber-300/90 font-medium">
-                      {user.role === 'seller' ? (
-                        <span>✨ Tienda activa: {user.storeName || 'Estudio Oficial'}</span>
-                      ) : (
-                        <span>✨ Pedidos realizados: {user.ordersCount || 0}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {user.role === 'seller' && (
-                    <button
-                      onClick={() => setIsSellerDashboardOpen(true)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-amber-400 hover:bg-amber-400/10 rounded-xl transition"
-                    >
-                      <PlusCircle className="w-4 h-4 text-amber-400" />
-                      Publicar nuevo diseño / Panel
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => onNavigateSection('custom-info')}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-xl transition"
-                  >
-                    <MessageSquareText className="w-4 h-4 text-slate-400" />
-                    Solicitudes de Diseños ({customRequests.length})
-                  </button>
-
-                  <div className="my-1 border-t border-slate-800" />
-
-                  <div className="px-3 py-2">
-                    <div className="text-[11px] text-slate-400 mb-1.5 font-medium">Cambiar rol (Demo):</div>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          loginAs('buyer');
-                          setIsUserMenuOpen(false);
-                        }}
-                        className={`text-[11px] py-1.5 px-2 rounded-lg font-medium border text-center transition ${
-                          user.role === 'buyer'
-                            ? 'bg-amber-400 text-black border-amber-400'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
-                        }`}
-                      >
-                        Comprador
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          loginAs('seller');
-                          setIsUserMenuOpen(false);
-                        }}
-                        className={`text-[11px] py-1.5 px-2 rounded-lg font-medium border text-center transition ${
-                          user.role === 'seller'
-                            ? 'bg-amber-400 text-black border-amber-400'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
-                        }`}
-                      >
-                        Vendedor
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="my-1 border-t border-slate-800" />
-
-                  <button
-                    onClick={() => logout()}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-xl transition"
-                  >
-                    <LogOut className="w-4 h-4 text-red-400" />
-                    Cerrar sesión
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setAuthDefaultRole('buyer');
-                  setIsAuthModalOpen(true);
-                }}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-200 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl transition flex items-center gap-1.5"
-              >
-                <User className="w-4 h-4 text-slate-400" />
-                Iniciar Sesión
-              </button>
-              <button
-                onClick={() => {
-                  setAuthDefaultRole('seller');
-                  setIsAuthModalOpen(true);
-                }}
-                className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 rounded-xl shadow-md shadow-amber-500/20 transition transform hover:-translate-y-0.5"
-              >
-                <Palette className="w-4 h-4" />
-                Vender Diseños
-              </button>
-            </div>
-          )}
         </div>
+
       </div>
+
     </header>
   );
 }

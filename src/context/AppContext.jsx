@@ -1,55 +1,52 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { INITIAL_PRODUCTS, INITIAL_CREATORS, DEMO_USERS } from '../data/mockData';
+import { 
+  INITIAL_PRODUCTS, 
+  INITIAL_CREATORS, 
+  DEMO_USERS, 
+  DEMO_ORDERS, 
+  DEMO_CUSTOM_REQUESTS 
+} from '../data/mockData';
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
+  // Vista actual: 'store' | 'login' | 'profile'
+  const [activeView, setActiveView] = useState('store');
+
   // Autenticación & Usuario
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('vipwear_user');
-    return saved ? JSON.parse(saved) : DEMO_USERS.buyer; // Inicia con comprador demo para experiencia inmediata
+    const saved = localStorage.getItem('tiendavip_user_v2');
+    return saved ? JSON.parse(saved) : DEMO_USERS.buyer;
   });
 
   // Catálogo de productos reactivo
   const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('vipwear_products');
+    const saved = localStorage.getItem('tiendavip_products_v3');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Si los datos guardados son viejos (precios en USD menores a 1000), resetear a COP
-        if (parsed[0]?.price < 1000) return INITIAL_PRODUCTS;
-        return parsed;
+        if (Array.isArray(parsed) && parsed.length >= 8) return parsed;
       } catch (e) {
-        return INITIAL_PRODUCTS;
+        // Fallback
       }
     }
     return INITIAL_PRODUCTS;
   });
 
+  // Pedidos del comprador
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem('tiendavip_orders_v2');
+    return saved ? JSON.parse(saved) : DEMO_ORDERS;
+  });
+
   // Carrito de compras
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('vipwear_cart');
+    const saved = localStorage.getItem('tiendavip_cart_v2');
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        if (parsed[0]?.price < 1000) {
-          return [
-            {
-              id: 'cart-init-1',
-              product: INITIAL_PRODUCTS[0],
-              size: 'L',
-              color: '#0f172a',
-              colorName: 'Negro Carbón',
-              apparelType: 'Camiseta Oversize 240g',
-              printPlacement: 'Pecho Frontal Grande',
-              quantity: 1,
-              price: INITIAL_PRODUCTS[0].price
-            }
-          ];
-        }
-        return parsed;
+        return JSON.parse(saved);
       } catch (e) {
-        // fallback
+        // Fallback
       }
     }
     return [
@@ -57,8 +54,8 @@ export function AppProvider({ children }) {
         id: 'cart-init-1',
         product: INITIAL_PRODUCTS[0],
         size: 'L',
-        color: '#0f172a',
-        colorName: 'Negro Carbón',
+        color: '#000000',
+        colorName: 'Negro Profundo',
         apparelType: 'Camiseta Oversize 240g',
         printPlacement: 'Pecho Frontal Grande',
         quantity: 1,
@@ -69,26 +66,12 @@ export function AppProvider({ children }) {
 
   // Solicitudes de diseño personalizado
   const [customRequests, setCustomRequests] = useState(() => {
-    const saved = localStorage.getItem('vipwear_custom_requests');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 'req-1',
-        buyerName: 'Sofía Morales',
-        buyerEmail: 'sofia@cliente.vip',
-        creatorName: 'Studio Kanso (Zen & Line)',
-        creatorId: 'c2',
-        projectType: 'Ilustración desde cero',
-        garment: 'Camiseta Oversize 240g',
-        budget: '$85.000 - $140.000 COP',
-        description: 'Quiero una ilustración botánica en trazo continuo lineal con ramas de olivo y tipografía sobria para la espalda de una camiseta cruda.',
-        status: 'En revisión por el artista',
-        createdAt: 'Hace 1 hora'
-      }
-    ];
+    const saved = localStorage.getItem('tiendavip_custom_requests_v2');
+    return saved ? JSON.parse(saved) : DEMO_CUSTOM_REQUESTS;
   });
 
   // Favoritos
-  const [favorites, setFavorites] = useState(['p1', 'p3']);
+  const [favorites, setFavorites] = useState(['p1', 'p2', 'p4']);
 
   // Modales y drawers
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -111,23 +94,33 @@ export function AppProvider({ children }) {
   // Persistencia local
   useEffect(() => {
     if (user) {
-      localStorage.setItem('vipwear_user', JSON.stringify(user));
+      localStorage.setItem('tiendavip_user_v2', JSON.stringify(user));
     } else {
-      localStorage.removeItem('vipwear_user');
+      localStorage.removeItem('tiendavip_user_v2');
     }
   }, [user]);
 
   useEffect(() => {
-    localStorage.setItem('vipwear_cart', JSON.stringify(cart));
+    localStorage.setItem('tiendavip_cart_v2', JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem('vipwear_products', JSON.stringify(products));
+    localStorage.setItem('tiendavip_products_v3', JSON.stringify(products));
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('vipwear_custom_requests', JSON.stringify(customRequests));
+    localStorage.setItem('tiendavip_orders_v2', JSON.stringify(orders));
+  }, [orders]);
+
+  useEffect(() => {
+    localStorage.setItem('tiendavip_custom_requests_v2', JSON.stringify(customRequests));
   }, [customRequests]);
+
+  // Funciones de navegación
+  const navigateTo = (view) => {
+    setActiveView(view);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Funciones de Carrito
   const addToCart = (item) => {
@@ -149,7 +142,7 @@ export function AppProvider({ children }) {
       return [...prev, { ...item, id: `cart-${Date.now()}` }];
     });
 
-    showToast(`¡Añadido al carrito! "${item.product.title}"`);
+    showToast(`Añadido al carrito: "${item.product.title}"`);
   };
 
   const removeFromCart = (cartItemId) => {
@@ -184,56 +177,113 @@ export function AppProvider({ children }) {
       prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
     );
     showToast(
-      favorites.includes(productId) ? 'Eliminado de favoritos' : 'Guardado en tu lista de deseos ❤️'
+      favorites.includes(productId) ? 'Eliminado de favoritos' : 'Guardado en tu lista de deseos'
     );
   };
 
   // Autenticación rápida y roles
-  const loginAs = (roleType) => {
+  const loginAs = (roleType, autoNavigate = true) => {
     if (roleType === 'buyer') {
       setUser(DEMO_USERS.buyer);
-      showToast('Sesión iniciada como Comprador: Sofía Morales 🛍️');
+      showToast('Sesión iniciada como Comprador: Sofía Morales');
     } else {
       setUser(DEMO_USERS.seller);
-      showToast('Sesión iniciada como Vendedor: NeoTokyo Arts 🎨');
+      showToast('Sesión iniciada como Diseñador: NeoTokyo Arts');
     }
     setIsAuthModalOpen(false);
+    if (autoNavigate) {
+      setActiveView('profile');
+    }
   };
 
-  const loginCustom = (userData) => {
+  const loginCustom = (userData, autoNavigate = true) => {
     setUser(userData);
     showToast(`Bienvenido de vuelta, ${userData.name}!`);
     setIsAuthModalOpen(false);
+    if (autoNavigate) {
+      setActiveView('profile');
+    }
   };
 
   const logout = () => {
     setUser(null);
     showToast('Has cerrado sesión correctamente', 'info');
+    setActiveView('store');
   };
 
-  // Publicar nuevo diseño (Rol Vendedor)
+  // Publicar nuevo diseño (Rol Diseñador / Vendedor)
   const addNewProduct = (productData) => {
     const newProd = {
       ...productData,
       id: `p-${Date.now()}`,
       rating: 5.0,
       reviewsCount: 1,
-      isFeatured: false
+      isFeatured: false,
+      availableColors: productData.availableColors || ['#000000', '#ffffff', '#2563eb'],
+      availableSizes: productData.availableSizes || ['S', 'M', 'L', 'XL']
     };
     setProducts((prev) => [newProd, ...prev]);
-    showToast('¡Diseño publicado exitosamente en el catálogo VIP! 🚀');
+    showToast('¡Diseño publicado exitosamente en el catálogo VIP!');
   };
 
-  // Solicitar diseño personalizado a un vendedor
+  // Pausar/Activar producto del diseñador
+  const toggleProductStatus = (productId) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === productId ? { ...p, isPaused: !p.isPaused } : p))
+    );
+    showToast('Estado del producto actualizado');
+  };
+
+  // Solicitar diseño personalizado
   const addCustomRequest = (reqData) => {
     const newReq = {
       ...reqData,
       id: `req-${Date.now()}`,
       status: 'Recibido por el artista',
+      statusStep: 1,
       createdAt: 'Justo ahora'
     };
     setCustomRequests((prev) => [newReq, ...prev]);
-    showToast('¡Solicitud enviada al vendedor! Te contactará a tu email.');
+    showToast('¡Solicitud enviada al diseñador! Te responderá a la brevedad.');
+  };
+
+  // Actualizar estado de solicitud personalizada
+  const updateCustomRequestStatus = (reqId, newStatus) => {
+    setCustomRequests((prev) =>
+      prev.map((r) => (r.id === reqId ? { ...r, status: newStatus } : r))
+    );
+    showToast(`Solicitud actualizada a: ${newStatus}`);
+  };
+
+  // Completar compra / checkout
+  const completeOrder = () => {
+    if (cart.length === 0) return;
+    const newOrder = {
+      id: `VIP-ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }),
+      status: 'En preparación de estampado',
+      statusColor: 'blue',
+      trackingNumber: `ENV-${Math.floor(10000000 + Math.random() * 90000000)}-COL`,
+      carrier: 'Coordinadora Express',
+      totalPrice: cartTotal,
+      items: cart.map((c) => ({
+        id: c.product.id,
+        title: c.product.title,
+        garment: c.apparelType,
+        size: c.size,
+        color: c.colorName,
+        quantity: c.quantity,
+        price: c.price,
+        image: c.product.image
+      }))
+    };
+    setOrders((prev) => [newOrder, ...prev]);
+    clearCart();
+    setIsCartOpen(false);
+    showToast('¡Compra realizada con éxito! Tu pedido ha sido enviado a producción.');
+    if (user?.role === 'buyer') {
+      setActiveView('profile');
+    }
   };
 
   // Abrir modal de producto
@@ -251,6 +301,9 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
+        activeView,
+        setActiveView,
+        navigateTo,
         user,
         setUser,
         loginAs,
@@ -258,7 +311,10 @@ export function AppProvider({ children }) {
         logout,
         products,
         addNewProduct,
+        toggleProductStatus,
         creators: INITIAL_CREATORS,
+        orders,
+        completeOrder,
         cart,
         addToCart,
         removeFromCart,
@@ -270,6 +326,7 @@ export function AppProvider({ children }) {
         toggleFavorite,
         customRequests,
         addCustomRequest,
+        updateCustomRequestStatus,
         // Modales
         isCartOpen,
         setIsCartOpen,
